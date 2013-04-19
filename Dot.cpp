@@ -44,7 +44,6 @@ void Dot::move( Uint32 deltaTicks, std::vector<Dot*> collisions ) {
     }
 
     if( ( x < 0 ) || ( x +DOT_WIDTH > SCREEN_WIDTH ) ) {   
-        //Move back
         x -= xVel * ( deltaTicks / 1000.f );
         xVel=xVel*-.9;
     }
@@ -97,11 +96,11 @@ float Dot::getyVel() {
 }
 
 float Dot::getX() {
-	return x;
+    return x;
 }
 
 float Dot::getY() {
-	return y;
+    return y;
 }
 Circle Dot::getC() {
     return c;
