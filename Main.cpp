@@ -14,6 +14,7 @@
 
 SDL_Surface *dot = NULL;
 SDL_Surface *screen = NULL;
+std::vector<Dot*> vdots;
 
 SDL_Event event;
 
@@ -54,6 +55,10 @@ bool init() {
 
     SDL_WM_SetCaption( "SDL Dots", NULL );
 
+    for (int i = 0;i<DOT_NUM;++i) {
+        vdots.push_back(new Dot());
+    }
+
     return true;
 }
 
@@ -73,17 +78,31 @@ void clean_up() {
     SDL_Quit();
 }
 
+void draw() {
+    SDL_FillRect( screen, &screen->clip_rect, SDL_MapRGB( screen->format, 0xFF, 0xFF, 0xFF ) );
 
-int mainloop() {
+    for (int q=0;q<vdots.size();++q) {
+        apply_surface( (int)vdots[q]->getX(), (int)vdots[q]->getY(), dot, screen );
+    }
+}
 
-    bool quit = false;
-    Timer* delta = new Timer();
-    std::vector<Dot*> vdots;
-
-    for (int i = 0;i<DOT_NUM;++i) {
-        vdots.push_back(new Dot());
+void mechanics(Timer* delta) {
+    for (int z = 0;z<vdots.size();++z) {
+        vdots[z]->push();
+        std::vector<Dot*> collisions;
+        collisions = vdots;
+        collisions.erase(collisions.begin()+z);
+        vdots[z]->move(delta->get_ticks(), collisions);
     }
 
+    
+}
+
+
+int mainloop() {
+    bool quit = false;
+    Timer* delta = new Timer();
+    
     delta->start();
 
     while( quit == false ) {
@@ -93,22 +112,11 @@ int mainloop() {
             }
         }
 
-        for (int z = 0;z<vdots.size();++z) {
-            vdots[z]->push();
-            std::vector<Dot*> collisions;
-            collisions = vdots;
-            collisions.erase(collisions.begin()+z);
-            vdots[z]->move(delta->get_ticks(), collisions);
-        }
-
+        mechanics(delta);
         delta->start();
-
-        SDL_FillRect( screen, &screen->clip_rect, SDL_MapRGB( screen->format, 0xFF, 0xFF, 0xFF ) );
-
-        for (int q=0;q<vdots.size();++q) {
-            apply_surface( (int)vdots[q]->getX(), (int)vdots[q]->getY(), dot, screen );
-        }
         
+        draw();
+
         if( SDL_Flip( screen ) == -1 ) {
             return 3; // ERROR 3 flip failed
         }
