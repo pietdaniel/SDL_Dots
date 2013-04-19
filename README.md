@@ -9,7 +9,7 @@ detection, and some basic physics.
 In the future I would like to add 
 functionality for simulated
 movement based on 
-subroutines
+subroutines<br>
 in the
 class
 dot
