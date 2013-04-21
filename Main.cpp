@@ -15,6 +15,8 @@
 SDL_Surface *dot = NULL;
 SDL_Surface *screen = NULL;
 std::vector<Dot*> vdots;
+SDL_Surface *sprites = NULL;
+SDL_Rect clip[ 4 ];
 
 SDL_Event event;
 
@@ -42,6 +44,26 @@ void apply_surface( int x, int y, SDL_Surface* source, SDL_Surface* destination,
 }
 
 bool init() {
+    // red
+   clip[ 0 ].x = 0;
+   clip[ 0 ].y = 0;
+   clip[ 0 ].w = 20;
+   clip[ 0 ].h = 20;
+   // green
+   clip[ 1 ].x = 20;
+   clip[ 1 ].y = 0;
+   clip[ 1 ].w = 20;
+   clip[ 1 ].h = 20;
+   // yellow
+   clip[ 2 ].x = 0;
+   clip[ 2 ].y = 20;
+   clip[ 2 ].w = 20;
+   clip[ 2 ].h = 20;
+   // blue
+   clip[ 3 ].x = 20;
+   clip[ 3 ].y = 20;
+   clip[ 3 ].w = 20;
+   clip[ 3 ].h = 20;
 
     if( SDL_Init( SDL_INIT_EVERYTHING ) == -1 ) {
         return false;
@@ -63,11 +85,14 @@ bool init() {
 }
 
 bool load_files() {
-
     dot = load_image( "dot.bmp" );
+    sprites = load_image("sprites.png");
 
     if( dot == NULL ) {
         return false;
+    }
+    if(sprites==NULL) {
+      return false;
     }
 
     return true;
@@ -82,20 +107,35 @@ void draw() {
     SDL_FillRect( screen, &screen->clip_rect, SDL_MapRGB( screen->format, 0xFF, 0xFF, 0xFF ) );
 
     for (int q=0;q<vdots.size();++q) {
-        apply_surface( (int)vdots[q]->getX(), (int)vdots[q]->getY(), dot, screen );
+        apply_surface( (int)vdots[q]->getX(), (int)vdots[q]->getY(), sprites, screen, &clip[vdots[q]->getColor()] );
     }
 }
 
 void mechanics(Timer* delta) {
     for (int z = 0;z<vdots.size();++z) {
         vdots[z]->push();
+
         std::vector<Dot*> collisions;
         collisions = vdots;
         collisions.erase(collisions.begin()+z);
-        vdots[z]->move(delta->get_ticks(), collisions);
-    }
 
-    
+        vdots[z]->move(delta->get_ticks(), collisions);
+        vdots[z]->direction(collisions);
+
+        if (Dot* q=vdots[z]->check_collision(vdots[z]->getC(),collisions)) {
+          int x = rand()%10+1;
+          std::cout << x;
+          std::cout << "\n";
+          if (q->getType()==vdots[z]->getType()) {
+            if ((rand()%100==1) && vdots.size()<MAX_DOTS) {
+              vdots.push_back(vdots[z]->breed());
+            }
+          }else {
+            vdots.erase(vdots.begin()+z);
+          }
+          q=NULL;
+        }
+    }
 }
 
 

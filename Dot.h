@@ -16,21 +16,34 @@ class Dot {
         float x, y;
         Circle c;
         float xVel, yVel;
+        int color; // 0 red 1 green 2 yellow 3 blue
+        int type; // 0 1
 
     public:    
         Dot();
         ~Dot();
         double distance( int x1, int y1, int x2, int y2);
         Dot* check_collision( Circle A, std::vector<Dot*> B );
+        void direction(std::vector<Dot*> others);
+        Dot* closest(std::vector<Dot*> others);
         void move( Uint32 deltaTicks , std::vector<Dot*> collisions );
         void push();
-        void setxVel(float x);
-        void setyVel(float y); 
+        void setxVel(float in);
+        void setyVel(float in); 
         float getxVel();
         float getyVel();
         float getX();
         float getY();
+        void setX(float in);
+        void setY(float in);
+        int getColor();
+        void setColor(int in);
         Circle getC();
+        void setC(Circle in);
+        int getType();
+        void setType(int in);
+        Dot* breed();
+        
 
 };
 #endif
