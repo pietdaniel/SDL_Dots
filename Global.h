@@ -8,4 +8,6 @@ extern const int DOT_WIDTH;
 extern const int DOT_HEIGHT;
 extern const int DOT_VEL;
 extern const int DOT_NUM;
+extern const int MAX_VEL;
+extern const int MAX_DOTS;
 #endif
